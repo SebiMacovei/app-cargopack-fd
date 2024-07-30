@@ -6,7 +6,7 @@ import {useState} from "react";
 import {ModalAdd} from "./Modal/ModalAdd.jsx";
 
 export function StatusCurse() {
-    const [openModal, setOpenModal] = useState(true);
+    const [openModal, setOpenModal] = useState(false);
 
     function onClose() {
         setOpenModal(false);
@@ -16,9 +16,8 @@ export function StatusCurse() {
         <Layout>
             <Card>
                 <div className={"flex justify-center text-black dark:text-amber-50 font-bold"}>
-
                     <Button gradientDuoTone="purpleToBlue"
-                            onClick={() => setOpenModal(true)}>Setare data cursa</Button>
+                            onClick={() => setOpenModal(true)}>Adaugă cursă</Button>
                     <ModalAdd openModal={openModal}
                               onClose={onClose}></ModalAdd>
                 </div>
