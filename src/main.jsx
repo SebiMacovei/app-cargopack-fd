@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {Admin} from "./ Admin/Admin.jsx";
 import {EmployeesTableList} from "./ Admin/Employees/EmployeesTableList.jsx";
 import {StatusCurse} from "./ Admin/Trips/StatusCurse.jsx";
+import {AddClients} from "./ Admin/AddClients/AddClients.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <>
@@ -28,6 +29,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Routes>
                 <Route exact path="/" element={<HomePage/>} />
                 <Route exact path="/login" element={<Login/>} />
+                <Route exact path="/addclients" element={<AddClients/>} />
+                <Route exact path="/addpackages" element={<AddClients/>} />
                 <Route exact path="/admin" element={<Admin/>} />
                 <Route exact path="/emptablelist" element={<EmployeesTableList/>} />
                 <Route exact path="/statscargo" element={<StatusCurse/>} />

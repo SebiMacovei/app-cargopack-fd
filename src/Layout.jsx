@@ -21,35 +21,36 @@ export function Layout(props) {
 
     return (
         <Flowbite>
-            <Navbar className={"bg-amber-500"}>
+            <Navbar fluid rounded  className={"bg-amber-500"}>
                 <Navbar.Brand className={"gap-3"}>
-                    <span
-                        className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">CarGoPack
+                    <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+                        <Link to="/">
+                        CarGoPack
+                        </Link>
                     </span>
                     <DarkThemeToggle/>
                 </Navbar.Brand>
-                <div className="flex md:order-2">
                     {localStorage.getItem("token") ?
-                        <Button onClick={() => logOut()} outline gradientDuoTone="greenToBlue">
-                            Deconectează-te
-                        </Button>
+                        <>
+                            <Navbar.Toggle/>
+                            <Navbar.Collapse>
+                                <Navbar.Link href="#">Profil</Navbar.Link>
+                                <Navbar.Link href="/statscargo">Status Curse</Navbar.Link>
+                                <Navbar.Link href="/addpackages">Adaugă Pachet</Navbar.Link>
+                                <Navbar.Link href="/addclients">Adaugă Persoana</Navbar.Link>
+                                <Button className={"flex m-2"}
+                                    onClick={() => logOut()} outline gradientDuoTone="greenToBlue">
+                                    Deconectează-te
+                                </Button>
+                            </Navbar.Collapse>
+                        </>
                         :
                         <Link to={"/login"}>
                             <Button gradientDuoTone="greenToBlue">
                                 Conectează-te
                             </Button>
-                        </Link>}
-                    <Navbar.Toggle/>
-                </div>
-                <Navbar.Collapse>
-                    <Navbar.Link href="/" active>
-                        Acasă
-                    </Navbar.Link>
-                    <Navbar.Link href="#">Profil</Navbar.Link>
-                    <Navbar.Link href="/statscargo">Status Curse</Navbar.Link>
-                    <Navbar.Link href="#">Adaugă Pachet</Navbar.Link>
-                    <Navbar.Link href="#">Adaugă Persoana</Navbar.Link>
-                </Navbar.Collapse>
+                        </Link>
+                    }
             </Navbar>
             {props.isCentered ?
                 <div className={"flex justify-center md:items-center h-[calc(100%-60px)] p-8"}>

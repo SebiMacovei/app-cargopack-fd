@@ -26,6 +26,7 @@ export function ReturnContent(props){
         props.setModelContent(prev => {
             return {...prev, start_retur: value[0], end_retur: value[1]}
         })
+        props.setEmptyInput(false)
     }
     return(
         <>
@@ -36,23 +37,42 @@ export function ReturnContent(props){
                           value={props.modelContent.start_retur ?
                               [props.modelContent.start_retur,props.modelContent.end_retur] : "" }/>
             </div>
-            <div className={"flex flex-col gap-2"}>
+            <div className={"flex flex-col"}>
                 <div>
                     <div className="text-center mb-2 block gap">
                         <Label value="Dată plecare retur:"/>
                     </div>
-                    <TextInput type="text" value={toJSONLocal(props.modelContent.start_retur)} rightIcon={FaArrowRight}
+                    <TextInput type="text"
+                               value={props.modelContent.start_retur === "" ?
+                                   props.modelContent.start_retur
+                                   :
+                                   toJSONLocal(props.modelContent.start_retur)}
+                               rightIcon={FaArrowRight}
                                placeholder="ZZ/LL/AAAA"
+                               color={props.emptyInput ? "failure" : ""}
+                               helperText={props.emptyInput ? <>
+                                   Câmp necompletat!
+                               </> : ""}
                                readOnly/>
                 </div>
                 <div className="flex text-3xl justify-center text-center dark:text-white">
                     <MdKeyboardDoubleArrowDown/>
                 </div>
-                <div className="text-center">
+                <div className={"flex flex-col"}>
                     <div className="mb-2 block">
                         <Label value="Dată sosire retur:"/>
                     </div>
-                    <TextInput type="text" value={toJSONLocal(props.modelContent.end_retur)} rightIcon={FaArrowLeft} placeholder="ZZ/LL/AAAA"
+                    <TextInput type="text"
+                               value={props.modelContent.end_retur === "" ?
+                                   props.modelContent.end_retur
+                                   :
+                                   toJSONLocal(props.modelContent.end_retur)}
+                               rightIcon={FaArrowLeft}
+                               placeholder="ZZ/LL/AAAA"
+                               color={props.emptyInput ? "failure" : ""}
+                               helperText={props.emptyInput ? <>
+                                   Câmp necompletat!
+                               </> : ""}
                                readOnly/>
                 </div>
             </div>

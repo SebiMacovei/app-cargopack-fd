@@ -56,7 +56,9 @@ export function AddCarContent(props) {
                          key={"selection" + index}>
                         <Select onChange={(e) => updateSelectedCar(index, Number(e.target.value))}
                                 value={selectedCar.id.toString()}
-                                theme={{"base": "flex w-full"}}>
+                                theme={{"base": "flex w-full"}}
+                                color ={selectedCar.id === 0 && props.emptyInput? "failure": ""}>
+
                             <option value={0}
                                     disabled={true}>Alegeți o mașină
                             </option>

@@ -5,7 +5,8 @@ import {RiSubtractFill} from "react-icons/ri";
 
 export function AddEmployeeContent(props){
     function updateSelectedUser(indexCar, indexUser, click_id) {
-        const newselectedCars = props.selectedCars.map((selectedCar, index_map) => {
+        //
+        const newselectedCars = JSON.parse(JSON.stringify(props.selectedCars)).map((selectedCar, index_map) => {
             // Checking which one of the elements are we editing
             if (index_map === indexCar) {
                 const specificUsers = selectedCar.users
@@ -15,8 +16,21 @@ export function AddEmployeeContent(props){
                 return selectedCar
             }
         })
+        /**
+         * Verify the value of old user selected in the list of users from every car ,
+         * then replace the old one with the new one and the old one pulled back into the selectedUsers.
+          */
+
+        const oldUser = props.selectedCars[indexCar].users[indexUser].id
+        const newselectedUsers = props.selectedUsers.filter(selectedUser => {
+            if(selectedUser.id === oldUser)
+                return false
+            else
+                return true
+            }
+        )
         props.setSelectedCars(newselectedCars)
-        props.setSelectedUsers(prev => [...prev, {id: click_id}])
+        props.setSelectedUsers([...newselectedUsers, {id: click_id}])
     }
 
     function deleteUser(userId, indexCar) {
@@ -60,6 +74,8 @@ export function AddEmployeeContent(props){
         })
         props.setSelectedCars(newselectedCars)
     }
+    // console.log(props.selectedUsers)
+    // console.log(props.selectedCars)
     return(<>
         <Label>Mașini selectate:</Label>
         {props.selectedCars.map((listCar, indexCar) => {
@@ -90,7 +106,8 @@ export function AddEmployeeContent(props){
                                                 <Select
                                                     onChange={(e) => updateSelectedUser(indexCar, indexUser, Number(e.target.value))}
                                                     value={selectedUser.id.toString()}
-                                                    theme={{"base": "flex w-full"}}>
+                                                    theme={{"base": "flex w-full"}}
+                                                color={props.emptyInput && selectedUser.id === 0?"failure":""}>
                                                     <option value={0}
                                                             disabled={true}>Alegeți un angajat.
                                                     </option>

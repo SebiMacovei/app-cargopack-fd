@@ -1,0 +1,34 @@
+{
+    "data_tur": {
+        "start_data_tur": "13.03.2024",
+        "end_data_tur": "14.03.2024"
+    },
+    "data_retur": {
+        "start_data_retur": "15.03.2024",
+        "end_data_retur": "16.03.2024"
+    },
+    "selectedCars": [
+        {
+            "id": 1,
+            "users": [
+                {
+                    "id": 7
+                },
+                {
+                    "id": 5
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "users": [
+                {
+                    "id": 4
+                },
+                {
+                    "id": 2
+                }
+            ]
+        }
+    ]
+}
