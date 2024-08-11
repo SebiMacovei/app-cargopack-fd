@@ -26,6 +26,9 @@ export function StatusCurse() {
                               onChange={(value, event) => console.log(value)}/>
                 </div>
             </Card>
+            <Card>
+
+            </Card>
         </Layout>
     )
 }
