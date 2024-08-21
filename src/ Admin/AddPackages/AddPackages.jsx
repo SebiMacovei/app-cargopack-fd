@@ -7,13 +7,18 @@ import {PiPackage} from "react-icons/pi";
 import {Stepper} from "../../CustomizeComponents/Stepper.jsx";
 import {HiOutlineArrowRight} from "react-icons/hi";
 import {HiOutlineArrowLeft} from "react-icons/hi";
-import { FaPhoneSquareAlt } from "react-icons/fa";
-import { FaMapLocationDot } from "react-icons/fa6";
-import { BsFilePersonFill } from "react-icons/bs";
-import { GiWeight } from "react-icons/gi";
-import { TbPackages } from "react-icons/tb";
-import { RiMoneyEuroCircleFill } from "react-icons/ri";
+import {FaPhoneSquareAlt} from "react-icons/fa";
+import {FaMapLocationDot} from "react-icons/fa6";
+import {BsFilePersonFill} from "react-icons/bs";
+import {GiWeight} from "react-icons/gi";
+import {TbPackages} from "react-icons/tb";
+import {RiMoneyEuroCircleFill} from "react-icons/ri";
+import {ValidationChangeStep} from "../../CustomizeComponents/ValidationChangeStep.js";
+import {doPost} from "../../http.js";
+import {useNavigate} from "react-router-dom";
+
 export function AddPackages() {
+    const navigate=useNavigate()
     const [statusPayment, setStatusPayment] = useState(false);
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [infoGiver, setInfoGiver] = useState({
@@ -23,8 +28,9 @@ export function AddPackages() {
         name_receiver: "", surname_receiver: "", phone_receiver: "", address_receiver: ""
     });
     const [infoPackage, setInfoPackage] = useState({
-        weight_load:"", number_load:"", paid_load:false, paid_load_value:""
+        weight_load: "", number_load: "", paid_load: false, paid_load_value: 0
     })
+    const [notEverytimeRed, setNotEverytimeRed] = useState(false)
     const steps = [{
         step: "Informații EXPEDITOR",
         icon: <FaPersonArrowUpFromLine/>
@@ -35,6 +41,76 @@ export function AddPackages() {
         step: "Informații COLET",
         icon: <PiPackage/>
     }]
+    const [isValidInput, setValidInput] = useState({
+        name_giver: false,
+        surname_giver: false,
+        phone_giver: false,
+        address_giver: false,
+        name_receiver: false,
+        surname_receiver: false,
+        phone_receiver: false,
+        address_receiver: false,
+        weight_load: false,
+        number_load: false,
+        paid_load_value: false
+    })
+
+    function capitalize(word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+    function next() {
+        switch (currentStepIndex) {
+            case 0:
+                ValidationChangeStep(isValidInput, infoGiver, setCurrentStepIndex, setValidInput, "+", setNotEverytimeRed, 2)
+                break
+            case 1:
+                ValidationChangeStep(isValidInput, infoReceiver, setCurrentStepIndex, setValidInput, "+", setNotEverytimeRed, 2)
+        }
+    }
+
+    function back() {
+        switch (currentStepIndex) {
+            case 1:
+                ValidationChangeStep(isValidInput, infoGiver, setCurrentStepIndex, setValidInput, "-", setNotEverytimeRed, 2)
+                break
+            case 2:
+                ValidationChangeStep(isValidInput, infoReceiver, setCurrentStepIndex, setValidInput, "-", setNotEverytimeRed, 2)
+        }
+    }
+    function addPackage() {
+        let isFormValid = ValidationChangeStep(isValidInput, infoPackage, setCurrentStepIndex, setValidInput, "+", setNotEverytimeRed, 2)
+        console.log(isFormValid)
+        if (isFormValid) {
+            doPost("/clients", {
+                name: infoGiver.name_giver + " " + infoGiver.surname_giver,
+                phone: infoGiver.phone_giver,
+                pick_up_address: infoGiver.address_giver,
+                paid: infoPackage.paid_load,
+                paid_value: infoPackage.paid_load_value,
+                client_type_id: 1
+            }).then((responseGiver) => {
+                doPost("/clients", {
+                    name: infoReceiver.name_receiver + " " + infoReceiver.surname_receiver,
+                    phone: infoReceiver.phone_receiver,
+                    drop_off_address: infoReceiver.address_receiver,
+                    paid: infoPackage.paid_load,
+                    paid_value: infoPackage.paid_load_value,
+                    client_type_id: 2
+                }).then((responseReceiver) => {
+                    doPost("/packages", {
+                        weight: infoPackage.weight_load,
+                        number_load: infoPackage.number_load,
+                        paid: infoPackage.paid_load,
+                        paid_value: infoPackage.paid_load_value,
+                        giver_id: responseGiver.data.id,
+                        receiver_id: responseReceiver.data.id
+                    }).then(responsePackage=> navigate("/"))
+                })
+            })
+        }
+    }
+
 
     function switchSteps() {
         switch (currentStepIndex) {
@@ -49,7 +125,11 @@ export function AddPackages() {
                                     <Label value="Nume de familie:"/>
                                 </div>
                                 <TextInput icon={BsFilePersonFill} placeholder="Nume"
-                                           onChange={e=>setInfoGiver((prev)=>({...prev, name_giver: e.target.value}))}
+                                           onChange={e => setInfoGiver((prev) => ({
+                                               ...prev,
+                                               name_giver: capitalize(e.target.value)
+                                           }))}
+                                           color={isValidInput.name_giver === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoGiver.name_giver}
                                            required/>
                             </div>
@@ -58,7 +138,11 @@ export function AddPackages() {
                                     <Label value="Prenume:"/>
                                 </div>
                                 <TextInput icon={BsFilePersonFill} placeholder="Prenume"
-                                           onChange={e=>setInfoGiver((prev)=>({...prev, surname_giver: e.target.value}))}
+                                           onChange={e => setInfoGiver((prev) => ({
+                                               ...prev,
+                                               surname_giver: capitalize(e.target.value)
+                                           }))}
+                                           color={isValidInput.surname_giver === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoGiver.surname_giver}
                                            required/>
                             </div>
@@ -68,7 +152,8 @@ export function AddPackages() {
                                 <Label value="Număr de telefon:"/>
                             </div>
                             <TextInput type="number" icon={FaPhoneSquareAlt} placeholder="+40... /+39..."
-                                       onChange={e=>setInfoGiver((prev)=>({...prev, phone_giver: e.target.value}))}
+                                       onChange={e => setInfoGiver((prev) => ({...prev, phone_giver: e.target.value}))}
+                                       color={isValidInput.phone_giver === false && notEverytimeRed === true ? "failure" : ""}
                                        value={infoGiver.phone_giver}
                                        required/>
                         </div>
@@ -77,13 +162,17 @@ export function AddPackages() {
                                 <Label value="Adresa de preluare:"/>
                             </div>
                             <TextInput icon={FaMapLocationDot} placeholder="Bacău/Bologna"
-                                       onChange={e=>setInfoGiver((prev)=>({...prev, address_giver: e.target.value}))}
+                                       onChange={e => setInfoGiver((prev) => ({
+                                           ...prev,
+                                           address_giver: capitalize(e.target.value)
+                                       }))}
+                                       color={isValidInput.address_giver === false && notEverytimeRed === true ? "failure" : ""}
                                        value={infoGiver.address_giver}
                                        required/>
                         </div>
                         <hr/>
                         <div className={"flex justify-center"}>
-                            <Button onClick={() => setCurrentStepIndex(prevState => prevState + 1)} outline pill>
+                            <Button onClick={() => next()} outline pill>
                                 <HiOutlineArrowRight className="h-6 w-6"/>
                             </Button>
                         </div>
@@ -99,7 +188,11 @@ export function AddPackages() {
                                     <Label value="Nume de familie:"/>
                                 </div>
                                 <TextInput icon={BsFilePersonFill} placeholder="Nume"
-                                           onChange={e=>setInfoReceiver((prev)=>({...prev, name_receiver: e.target.value}))}
+                                           onChange={e => setInfoReceiver((prev) => ({
+                                               ...prev,
+                                               name_receiver: capitalize(e.target.value)
+                                           }))}
+                                           color={isValidInput.name_receiver === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoReceiver.name_receiver}
                                            required/>
                             </div>
@@ -107,10 +200,14 @@ export function AddPackages() {
                                 <div className="mb-2 block">
                                     <Label value="Prenume:"/>
                                 </div>
-                                <TextInput  icon={BsFilePersonFill} placeholder="Prenume"
-                                            onChange={e=>setInfoReceiver((prev)=>({...prev, surname_receiver: e.target.value}))}
-                                            value={infoReceiver.surname_receiver}
-                                            required/>
+                                <TextInput icon={BsFilePersonFill} placeholder="Prenume"
+                                           onChange={e => setInfoReceiver((prev) => ({
+                                               ...prev,
+                                               surname_receiver: capitalize(e.target.value)
+                                           }))}
+                                           color={isValidInput.surname_receiver === false && notEverytimeRed === true ? "failure" : ""}
+                                           value={infoReceiver.surname_receiver}
+                                           required/>
                             </div>
                         </div>
                         <div>
@@ -118,7 +215,11 @@ export function AddPackages() {
                                 <Label value="Număr de telefon:"/>
                             </div>
                             <TextInput type="number" icon={FaPhoneSquareAlt} placeholder="+40... /+39..."
-                                       onChange={e=>setInfoReceiver((prev)=>({...prev, phone_receiver: e.target.value}))}
+                                       onChange={e => setInfoReceiver((prev) => ({
+                                           ...prev,
+                                           phone_receiver: e.target.value
+                                       }))}
+                                       color={isValidInput.phone_receiver === false && notEverytimeRed === true ? "failure" : ""}
                                        value={infoReceiver.phone_receiver}
                                        required/>
                         </div>
@@ -127,16 +228,20 @@ export function AddPackages() {
                                 <Label value="Adresa de predare:"/>
                             </div>
                             <TextInput icon={FaMapLocationDot} placeholder="Bacău/Bologna"
-                                       onChange={e=>setInfoReceiver((prev)=>({...prev, address_receiver: e.target.value}))}
+                                       onChange={e => setInfoReceiver((prev) => ({
+                                           ...prev,
+                                           address_receiver: capitalize(e.target.value)
+                                       }))}
+                                       color={isValidInput.address_receiver === false && notEverytimeRed === true ? "failure" : ""}
                                        value={infoReceiver.address_receiver}
                                        required/>
                         </div>
                         <hr/>
                         <div className={"flex flex-row justify-evenly mt-2"}>
-                            <Button onClick={() => setCurrentStepIndex(prevState => prevState - 1)} outline pill>
+                            <Button onClick={() => back()} outline pill>
                                 <HiOutlineArrowLeft className="h-6 w-6"/>
                             </Button>
-                            <Button onClick={() => setCurrentStepIndex(prevState => prevState + 1)} outline pill>
+                            <Button onClick={() => next()} outline pill>
                                 <HiOutlineArrowRight className="h-6 w-6"/>
                             </Button>
                         </div>
@@ -153,7 +258,11 @@ export function AddPackages() {
                                     <Label value="Greutate bagaj:"/>
                                 </div>
                                 <TextInput icon={GiWeight} type="number" placeholder="00"
-                                           onChange={e=>setInfoPackage((prev)=>({...prev, weight_load: e.target.value}))}
+                                           onChange={e => setInfoPackage((prev) => ({
+                                               ...prev,
+                                               weight_load: e.target.value
+                                           }))}
+                                           color={isValidInput.weight_load === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoPackage.weight_load}
                                            required/>
                             </div>
@@ -162,7 +271,11 @@ export function AddPackages() {
                                     <Label value="Număr colete:"/>
                                 </div>
                                 <TextInput icon={TbPackages} type="number" placeholder="00"
-                                           onChange={e=>setInfoPackage((prev)=>({...prev, number_load: e.target.value}))}
+                                           onChange={e => setInfoPackage((prev) => ({
+                                               ...prev,
+                                               number_load: e.target.value
+                                           }))}
+                                           color={isValidInput.weight_load === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoPackage.number_load}
                                            required/>
                             </div>
@@ -173,7 +286,7 @@ export function AddPackages() {
                                     <Label value="Platit?"/>
                                 </div>
                                 <ToggleSwitch className={"flex items-center self-center"}
-                                              onChange={e=>setInfoPackage((prev)=>({...prev, paid_load: e.target.checked}))}
+                                              onChange={e => setInfoPackage((prev) => ({...prev, paid_load: e}))}
                                               checked={infoPackage.paid_load}
                                               label={infoPackage.paid_load ? "DA" : "MAI TÂRZIU"}/>
                             </div>
@@ -183,7 +296,11 @@ export function AddPackages() {
                                         <Label value="Sumă achitată:"/>
                                     </div>
                                     <TextInput icon={RiMoneyEuroCircleFill} type="number" placeholder="00"
-                                               onChange={e=>setInfoPackage((prev)=>({...prev, paid_load_value: e.target.value}))}
+                                               onChange={e => setInfoPackage((prev) => ({
+                                                   ...prev,
+                                                   paid_load_value: e.target.value
+                                               }))}
+                                               color={isValidInput.paid_load_value === false && notEverytimeRed === true ? "failure" : ""}
                                                value={infoPackage.paid_load_value}
                                                required/>
                                 </div>
@@ -199,10 +316,11 @@ export function AddPackages() {
                         </div>
                         <hr/>
                         <div className={"flex flex-row justify-between gap-7"}>
-                            <Button onClick={() => setCurrentStepIndex(prevState => prevState - 1)} outline pill>
+                            <Button onClick={() => back()} outline pill>
                                 <HiOutlineArrowLeft className="h-6 w-6"/>
                             </Button>
-                            <Button className={"mb-2 flex gap-7 "} outline gradientDuoTone="greenToBlue">
+                            <Button className={"mb-2 flex gap-7 "}
+                                    onClick={() => addPackage()} outline gradientDuoTone="greenToBlue">
                                 ADAUGĂ COLETE
                             </Button>
 
@@ -212,7 +330,7 @@ export function AddPackages() {
                 )
         }
     }
-console.log(infoGiver, infoReceiver, infoPackage)
+
     return (
         <Layout isCentered={true}>
             <div>

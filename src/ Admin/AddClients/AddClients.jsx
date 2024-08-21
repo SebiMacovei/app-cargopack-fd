@@ -1,35 +1,64 @@
 import {Layout} from "../../Layout.jsx";
-import {Button, Card, FileInput, Label, Select, TextInput, ToggleSwitch} from "flowbite-react";
+import {Button, Card, FileInput, Label, TextInput, ToggleSwitch} from "flowbite-react";
 import React, {useState} from "react";
 import {HiOutlineArrowLeft, HiOutlineArrowRight} from "react-icons/hi";
 import {FaPersonWalkingLuggage} from "react-icons/fa6";
-import {PiPackage} from "react-icons/pi";
-import { MdOutlineLuggage } from "react-icons/md";
+import {MdOutlineLuggage} from "react-icons/md";
 import {Stepper} from "../../CustomizeComponents/Stepper.jsx";
-import { FaPhoneSquareAlt } from "react-icons/fa";
-import { FaMapLocationDot } from "react-icons/fa6";
-import { BsFilePersonFill } from "react-icons/bs";
-import { GiWeight } from "react-icons/gi";
-import { TbPackages } from "react-icons/tb";
-import { RiMoneyEuroCircleFill } from "react-icons/ri";
+import {FaPhoneSquareAlt} from "react-icons/fa";
+import {FaMapLocationDot} from "react-icons/fa6";
+import {BsFilePersonFill} from "react-icons/bs";
+import {GiWeight} from "react-icons/gi";
+import {TbPackages} from "react-icons/tb";
+import {RiMoneyEuroCircleFill} from "react-icons/ri";
+import {doPost} from "../../http.js";
+import {ValidationChangeStep} from "../../CustomizeComponents/ValidationChangeStep.js";
+import {useNavigate} from "react-router-dom";
 
 
 export function AddClients() {
+    const navigate = useNavigate()
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [infoPassenger, setInfoPassenger] = useState({
-        name_passenger: "", surname_passenger: "", phone_passenger: "", address_passenger: ""
+        name_passenger: "",
+        surname_passenger: "",
+        phone_passenger: "",
+        address_passenger_pick_up: "",
+        address_passenger_drop_off: ""
     });
     const [infoPackagePassenger, setInfoPackagePassenger] = useState({
-        weight_load_p:"", number_load_p:"", paid_load_p:false, paid_load_value_p:""
+        weight_load_p: "", number_load_p: "", paid: false, paid_value: 0
     })
+    const [isValidInput, setValidInput] = useState({
+        name_passenger: false,
+        surname_passenger: false,
+        phone_passenger: false,
+        address_passenger_pick_up: false,
+        address_passenger_drop_off: false,
+        weight_load_p: false,
+        number_load_p: false,
+        paid_value: false,
+        paid: false
+    })
+    const [notEverytimeRed, setNotEverytimeRed] = useState(false)
     const steps = [{
         step: "Informații PASAGER:",
-        icon: <FaPersonWalkingLuggage />
+        icon: <FaPersonWalkingLuggage/>
     }, {
         step: "Informații BAGAJ-PASAGER:",
         icon: <MdOutlineLuggage/>
     }]
-    console.log(infoPassenger)
+
+    function capitalize(word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+    function next() {
+        ValidationChangeStep(isValidInput,infoPassenger,setCurrentStepIndex,setValidInput,"+",setNotEverytimeRed,1)
+    }
+    function back(){
+        ValidationChangeStep(isValidInput,infoPassenger,setCurrentStepIndex,setValidInput,"-",setNotEverytimeRed,1)
+    }
     function switchSteps() {
         switch (currentStepIndex) {
             case 0:
@@ -43,7 +72,11 @@ export function AddClients() {
                                     <Label value="Nume de familie:"/>
                                 </div>
                                 <TextInput icon={BsFilePersonFill} placeholder="Nume"
-                                           onChange={e=>setInfoPassenger((prev)=>({...prev, name_passenger: e.target.value}))}
+                                           onChange={e => setInfoPassenger((prev) => ({
+                                               ...prev,
+                                               name_passenger: capitalize(e.target.value)
+                                           }))}
+                                           color={isValidInput.name_passenger === false && notEverytimeRed === true? "failure" : "" }
                                            value={infoPassenger.name_passenger}
                                            required/>
                             </div>
@@ -52,7 +85,11 @@ export function AddClients() {
                                     <Label value="Prenume:"/>
                                 </div>
                                 <TextInput icon={BsFilePersonFill} type="text" placeholder="Prenume"
-                                           onChange={e=>setInfoPassenger((prev)=>({...prev, surname_passenger: e.target.value}))}
+                                           onChange={e => setInfoPassenger((prev) => ({
+                                               ...prev,
+                                               surname_passenger: capitalize(e.target.value)
+                                           }))}
+                                           color={isValidInput.surname_passenger === false && notEverytimeRed === true? "failure" : "" }
                                            value={infoPassenger.surname_passenger}
                                            required/>
                             </div>
@@ -62,7 +99,11 @@ export function AddClients() {
                                 <Label value="Număr de telefon:"/>
                             </div>
                             <TextInput icon={FaPhoneSquareAlt} type="number" placeholder="+40... /+39..."
-                                       onChange={e=>setInfoPassenger((prev)=>({...prev, phone_passenger: e.target.value}))}
+                                       onChange={e => setInfoPassenger((prev) => ({
+                                           ...prev,
+                                           phone_passenger: e.target.value
+                                       }))}
+                                       color={isValidInput.phone_passenger === false && notEverytimeRed === true? "failure" : "" }
                                        value={infoPassenger.phone_passenger}
                                        required/>
                         </div>
@@ -71,13 +112,30 @@ export function AddClients() {
                                 <Label value="Adresa de preluare:"/>
                             </div>
                             <TextInput icon={FaMapLocationDot} placeholder="Bacău/Bologna"
-                                       onChange={e=>setInfoPassenger((prev)=>({...prev, address_passenger: e.target.value}))}
-                                       value={infoPassenger.address_passenger}
+                                       onChange={e => setInfoPassenger((prev) => ({
+                                           ...prev,
+                                           address_passenger_pick_up: capitalize(e.target.value)
+                                       }))}
+                                       color={isValidInput.address_passenger_pick_up === false && notEverytimeRed === true? "failure" : "" }
+                                       value={infoPassenger.address_passenger_pick_up}
+                                       required/>
+                        </div>
+                        <div>
+                            <div className="mb-2 block">
+                                <Label value="Adresa de predare:"/>
+                            </div>
+                            <TextInput icon={FaMapLocationDot} placeholder="Bacău/Bologna"
+                                       onChange={e => setInfoPassenger((prev) => ({
+                                           ...prev,
+                                           address_passenger_drop_off: capitalize(e.target.value)
+                                       }))}
+                                       color={isValidInput.address_passenger_drop_off === false && notEverytimeRed === true? "failure" : "" }
+                                       value={infoPassenger.address_passenger_drop_off}
                                        required/>
                         </div>
                         <hr/>
                         <div className={"flex justify-center"}>
-                            <Button onClick={() => setCurrentStepIndex(prevState => prevState + 1)} outline pill>
+                            <Button onClick={() => next()} outline pill>
                                 <HiOutlineArrowRight className="h-6 w-6"/>
                             </Button>
                         </div>
@@ -92,18 +150,26 @@ export function AddClients() {
                                 <div className="mb-2 block">
                                     <Label value="Greutate bagaj:"/>
                                 </div>
-                                <TextInput  icon={GiWeight} type="number" placeholder="00"
-                                            onChange={e=>setInfoPackagePassenger((prev)=>({...prev, weight_load_p: e.target.value}))}
-                                            value={infoPassenger.weight_load_p}
-                                            required/>
+                                <TextInput icon={GiWeight} type="number" placeholder="00"
+                                           onChange={e => setInfoPackagePassenger((prev) => ({
+                                               ...prev,
+                                               weight_load_p: e.target.value
+                                           }))}
+                                           color={isValidInput.weight_load_p === false && notEverytimeRed === true? "failure" : "" }
+                                           value={infoPackagePassenger.weight_load_p}
+                                           required/>
                             </div>
                             <div className={"flex-grow"}>
                                 <div className="mb-2 block">
                                     <Label value="Număr colete:"/>
                                 </div>
                                 <TextInput icon={TbPackages} type="number" placeholder="00"
-                                           onChange={e=>setInfoPackagePassenger((prev)=>({...prev, number_load_p: e.target.value}))}
-                                           value={infoPassenger.number_load_p}  required/>
+                                           onChange={e => setInfoPackagePassenger((prev) => ({
+                                               ...prev,
+                                               number_load_p: e.target.value
+                                           }))}
+                                           color={isValidInput.number_load_p === false && notEverytimeRed === true? "failure" : "" }
+                                           value={infoPackagePassenger.number_load_p} required/>
                             </div>
                         </div>
                         <div className={"mb-2 flex gap-7 "}>
@@ -112,18 +178,25 @@ export function AddClients() {
                                     <Label value="Platit?"/>
                                 </div>
                                 <ToggleSwitch className={"flex items-center self-center"}
-                                              onChange={e=>setInfoPackagePassenger((prev)=>({...prev, paid_load_p: e.target.checked}))}
-                                              checked={infoPassenger.paid_load_p}
-                                              label={infoPassenger.paid_load_p ? "DA" : "MAI TÂRZIU"}/>
+                                              onChange={e => setInfoPackagePassenger((prev) => ({
+                                                  ...prev,
+                                                  paid_load: e
+                                              }))}
+                                              checked={infoPackagePassenger.paid}
+                                              label={infoPackagePassenger.paid ? "DA" : "MAI TÂRZIU"}/>
                             </div>
-                            {infoPassenger.paid_load_p ?
+                            {infoPackagePassenger.paid ?
                                 <div className={"flex flex-col justify-end"}>
                                     <div className="mb-2 block">
                                         <Label value="Sumă achitată:"/>
                                     </div>
                                     <TextInput icon={RiMoneyEuroCircleFill} type="number" placeholder="00"
-                                               onChange={e=>setInfoPackagePassenger((prev)=>({...prev, paid_load_value_p: e.target.value}))}
-                                               value={infoPassenger.paid_load_value_p}
+                                               onChange={e => setInfoPackagePassenger((prev) => ({
+                                                   ...prev,
+                                                   paid_value: e.target.value
+                                               }))}
+                                               color={isValidInput.number_load_p === false && notEverytimeRed === true? "failure" : "" }
+                                               value={infoPackagePassenger.paid_value}
                                                required/>
                                 </div>
                                 : ""}
@@ -138,10 +211,11 @@ export function AddClients() {
                         </div>
                         <hr/>
                         <div className={"flex flex-row justify-between gap-7"}>
-                            <Button onClick={() => setCurrentStepIndex(prevState => prevState - 1)} outline pill>
+                            <Button onClick={() => back()} outline pill>
                                 <HiOutlineArrowLeft className="h-6 w-6"/>
                             </Button>
-                            <Button className={"mb-2 flex gap-7 "} outline gradientDuoTone="greenToBlue">
+                            <Button className={"mb-2 flex gap-7"} outline gradientDuoTone="greenToBlue"
+                                    onClick={e => addPassanger()}>
                                 ADAUGĂ PASAGER
                             </Button>
 
@@ -149,6 +223,30 @@ export function AddClients() {
 
                     </div>
                 )
+        }
+    }
+
+    function addPassanger() {
+        let isFormValid = ValidationChangeStep(isValidInput,infoPackagePassenger,setCurrentStepIndex,setValidInput,"+",setNotEverytimeRed,1)
+        console.log(isFormValid)
+        if(isFormValid){
+            doPost("/clients", {
+                name: infoPassenger.name_passenger + " " + infoPassenger.surname_passenger,
+                phone: infoPassenger.phone_passenger,
+                pick_up_address: infoPassenger.address_passenger_pick_up,
+                drop_off_address: infoPassenger.address_passenger_drop_off,
+                paid: infoPackagePassenger.paid,
+                paid_value: infoPackagePassenger.paid_value,
+                client_type_id: 3
+            }).then((response) => {
+                doPost("/packages", {
+                    weight: infoPackagePassenger.weight_load_p,
+                    number_load: infoPackagePassenger.number_load_p,
+                    paid: infoPackagePassenger.paid,
+                    paid_value: infoPackagePassenger.paid_value,
+                    passenger_id: response.data.id
+                }).then(responsePackages=> navigate("/"))
+            })
         }
     }
 

@@ -1,5 +1,5 @@
 import {Layout} from "../Layout.jsx";
-import { Button, Label, TextInput } from "flowbite-react";
+import {Button, Card, Label, TextInput} from "flowbite-react";
 import { RiLockPasswordFill } from "react-icons/ri";
 import {useState} from "react";
 import PhoneInput from "react-phone-number-input";
@@ -8,7 +8,7 @@ import {PhoneIcone} from "./resource/PhoneIcone.jsx";
 import {doPost} from "../http.js";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
-export function Login() {
+export function Login(props) {
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [focused, setIsFocused] = useState(false);
@@ -24,8 +24,9 @@ export function Login() {
     }
     return(
         <Layout isCentered={true}>
-                <div className="flex max-w-md w-full flex-col gap-4">
-                    <div>
+            <Card className={"flex basis-[500px]"}>
+                <div className="flex max-w-md max-h-md w-full flex-col basis-1/4 md:basis-1/3 gap-4">
+                        <div>
                         <div className="mb-2 block">
                             <Label htmlFor="email1" value="Numele de autentificare:"/>
                         </div>
@@ -49,6 +50,7 @@ export function Login() {
                     </div>
                     <Button onClick={()=> submit()} type="submit">Conectează-te</Button>
                 </div>
+            </Card>
         </Layout>
     )
 }

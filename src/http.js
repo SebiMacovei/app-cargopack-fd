@@ -1,6 +1,13 @@
 import axios from "axios";
+import {jwtDecode} from "jwt-decode";
 
 const url = "http://127.0.0.1:3000"
+if (localStorage.getItem("token")) {
+    const decoded = jwtDecode(localStorage.getItem("token"));
+    if (decoded.exp <= Math.floor(new Date().getTime() / 1000)) {
+        localStorage.removeItem("token")
+    }
+}
 const config = {
     headers: {
         "Content-Type": "application/json",

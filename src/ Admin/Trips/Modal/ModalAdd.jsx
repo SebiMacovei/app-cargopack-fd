@@ -164,9 +164,7 @@ export function ModalAdd(props) {
                     return {car_id: selectedCar.id, users: selectedCar.users}
                 })
             }
-            doPost("/trips", allData).then(response => {
-                window.location.reload()
-            })
+            doPost("/trips", allData).then(response => navigate("/"))
         }
     }
 

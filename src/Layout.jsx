@@ -1,18 +1,10 @@
-import {Button, Flowbite, Navbar, NavbarLink} from "flowbite-react";
+import {Button, Flowbite, Navbar} from "flowbite-react";
 import {DarkThemeToggle} from "flowbite-react";
 import {Link, useNavigate} from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
 import {toast} from "react-toastify";
 
 export function Layout(props) {
     const navigate = useNavigate();
-    if (localStorage.getItem("token")) {
-        const decoded = jwtDecode(localStorage.getItem("token"));
-        if (decoded.exp <= Math.floor(new Date().getTime() / 1000)) {
-            localStorage.removeItem("token")
-        }
-    }
-
     function logOut() {
         localStorage.removeItem("token");
         toast.success("Deconectare reușită!")
@@ -54,11 +46,11 @@ export function Layout(props) {
             </Navbar>
             {
                 props.isCentered ?
-                    <div className={"flex justify-center md:items-center h-[calc(100%-60px)] p-5"}>
+                    <div className={"flex justify-center md:items-center w-full max-h-[calc(100%-60px)] p-5"}>
                         {props.children}
                     </div>
                     :
-                    <div className={"h-[calc(100%-60px)] p-3"}>
+                    <div className={"max-h-[calc(100%-60px)] p-5"}>
                         {props.children}
                     </div>
             }
