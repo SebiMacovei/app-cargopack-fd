@@ -2,37 +2,27 @@ import {Button, Flowbite, Navbar} from "flowbite-react";
 import {DarkThemeToggle} from "flowbite-react";
 import {Link, useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
+import BottomNavBar from "./BottomNavBar/BottomNavBar.jsx";
 
 export function Layout(props) {
     const navigate = useNavigate();
-    function logOut() {
-        localStorage.removeItem("token");
-        toast.success("Deconectare reușită!")
-        navigate("/")
-    }
-
     return (
         <Flowbite>
-            <Navbar fluid rounded className={"bg-amber-500 gap-2"}>
-                <Navbar.Brand as={Link} href="/" className={"gap-3"}>
-                        <div className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-                        CarGoPack
-                        </div>
-                    <DarkThemeToggle/>
-                </Navbar.Brand>
+            <Navbar fluid rounded className={"bg-yellow-melon dark:bg-black-pro gap-2"}>
+               <div className={"gap-3 flex flex-row items-center"}>
+                   <Link to="/">
+                       <div className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+                           CarGoPack
+                       </div>
+                   </Link>
+                   <DarkThemeToggle/>
+               </div>
                 {localStorage.getItem("token") ?
                     <>
-                        <Navbar.Toggle/>
+                        <Navbar.Toggle className={"text-white"}/>
                         <Navbar.Collapse>
                             <div className={"md:flex  md:justify-around  md:items-center md:gap-6"}>
-                                    <Navbar.Link href="#">Profil</Navbar.Link>
                                     <Navbar.Link href="/statscargo">Status Curse</Navbar.Link>
-                                    <Navbar.Link href="/addpackages">Adaugă Pachet</Navbar.Link>
-                                    <Navbar.Link href="/addclients">Adaugă Persoana</Navbar.Link>
-                                <Button className={"flex m-2"}
-                                        onClick={() => logOut()} outline gradientDuoTone="greenToBlue">
-                                    Deconectează-te
-                                </Button>
                             </div>
                         </Navbar.Collapse>
                   </>
@@ -54,7 +44,7 @@ export function Layout(props) {
                         {props.children}
                     </div>
             }
-
+            {localStorage.getItem("token") && <BottomNavBar/>}
         </Flowbite>
     )
 }

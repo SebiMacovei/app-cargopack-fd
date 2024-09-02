@@ -14,7 +14,7 @@ export function StatusCurse() {
 
     return (
         <Layout>
-            <Card>
+            <Card className={"bg-mold dark:bg-slate-700"}>
                 <div className={"flex justify-center text-black dark:text-amber-50 font-bold"}>
                     <Button gradientDuoTone="purpleToBlue"
                             onClick={() => setOpenModal(true)}>Adaugă cursă</Button>
@@ -26,7 +26,7 @@ export function StatusCurse() {
                               onChange={(value, event) => console.log(value)}/>
                 </div>
             </Card>
-            <Card>
+            <Card className={"bg-darker-mold"}>
 
             </Card>
         </Layout>

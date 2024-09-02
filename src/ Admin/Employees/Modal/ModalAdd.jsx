@@ -5,26 +5,37 @@ import {RiLockPasswordFill} from "react-icons/ri";
 import PhoneInput, {isValidPhoneNumber} from "react-phone-number-input";
 import {PhoneIcone} from "../../../Authentication/resource/PhoneIcone.jsx";
 import {toast} from "react-toastify";
-export function ModalAdd(props){
+import {FileInput} from "flowbite-react";
+
+export function ModalAdd(props) {
     const id = "add"
     const [name, setName] = useState("")
     const [phone, setPhone] = useState("")
     const [password, setPassword] = useState("");
+    const [avatar, setAvatar] = useState("");
     const [focused, setIsFocused] = useState(false);
-    function addUser(){
-        doPost("/signup", {"user":{ name: name, phone: phone, password: password }})
-        .then((response) => {
-            setName("")
-            setPhone("")
-            props.onCloseModal()
-            toast.success("Inregistrare reușită!")
-            props.refresh()
-        }).catch(error => {
+
+    function addUser() {
+        const formData = new FormData();
+        formData.append("user[name]", name);
+        formData.append("user[phone]", phone);
+        formData.append("user[password]", password);
+        formData.append("user[avatar]", avatar);
+        console.log(formData)
+        doPost("/signup", formData)
+            .then((response) => {
+                setName("")
+                setPhone("")
+                setPassword("")
+                setAvatar("")
+                props.onCloseModal()
+                toast.success("Inregistrare reușită!")
+                props.refresh()
+            }).catch(error => {
             toast.error("Utilizatorul există deja!")
         })
     }
-    console.log(name)
-    return(
+    return (
         <Modal show={id === props.openModal} size="md" onClose={props.onCloseModal} popup>
             <Modal.Header/>
             <Modal.Body>
@@ -48,8 +59,8 @@ export function ModalAdd(props){
                             <Label htmlFor="phone" value="Număr de telefon:"/>
                         </div>
                         <PhoneInput
-                            onClick={()=>setIsFocused(true)}
-                            onBlur={()=>setIsFocused(false)}
+                            onClick={() => setIsFocused(true)}
+                            onBlur={() => setIsFocused(false)}
                             defaultCountry="RO"
                             placeholder="Introduceți numărul de telefon"
                             value={phone}
@@ -66,8 +77,18 @@ export function ModalAdd(props){
                                    icon={RiLockPasswordFill} placeholder="Parola"
                                    required/>
                     </div>
+                    <div id="fileUpload" className="max-w-md">
+                        <div className="mb-2 block">
+                            <Label htmlFor="file" value="Incarcă imaginea"/>
+                        </div>
+                        <FileInput id="file"
+                                   helperText="Adauga poza pentru a seta profilul angajatului"
+                                   accept={"image/*"}
+                                   onChange={e => setAvatar(e.target.files[0])}/>
+                    </div>
                     <div className="w-full flex justify-center ">
-                        <Button onClick={()=>  addUser()} disabled={phone&&!isValidPhoneNumber(phone)} type="submit">Salvează</Button>
+                        <Button onClick={() => addUser()} disabled={phone && !isValidPhoneNumber(phone)}
+                                type="submit">Salvează</Button>
                     </div>
                 </div>
             </Modal.Body>

@@ -8,6 +8,7 @@ function HomePage() {
         <Layout>
             <Button onClick={()=> navigate("/admin")}>Admin</Button>
         </Layout>
+
     )
 }
 

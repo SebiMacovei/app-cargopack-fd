@@ -334,7 +334,7 @@ export function AddPackages() {
     return (
         <Layout isCentered={true}>
             <div>
-                <Card className={"flex flex-col gap-5 max-w-xl"}>
+                <Card className={"flex flex-col gap-5 max-w-xl bg-mold dark:bg-slate-700"}>
                     <Stepper steps={steps}
                              currentPageIndex={currentStepIndex}></Stepper>
                     {switchSteps()}
