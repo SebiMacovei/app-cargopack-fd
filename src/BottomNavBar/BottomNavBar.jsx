@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import './BottomNavBar.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faHome, faSearch, faBell, faUser, faPlusCircle} from '@fortawesome/free-solid-svg-icons';
+import {faHome, faBell, faUser, faPlusCircle, faRectangleList} from '@fortawesome/free-solid-svg-icons';
 import {Link} from "react-router-dom";
 import {ModalPlus} from "./ModalPlus.jsx";
 import {Profile} from "../ Admin/Profile/Profile.jsx";
+
 
 export default function BottomNavBar() {
     const [openModal, setOpenModal] = useState(false);
@@ -15,8 +16,8 @@ export default function BottomNavBar() {
             <Link to={"/"} className="nav-item">
                 <FontAwesomeIcon icon={faHome}/>
             </Link>
-            <Link to={"/"} className="nav-item">
-                <FontAwesomeIcon icon={faSearch}/>
+            <Link to={"/statscargo"} className="nav-item">
+                <FontAwesomeIcon icon={faRectangleList} />
             </Link>
             <div onClick={() => {
                 setOpenModal(true)

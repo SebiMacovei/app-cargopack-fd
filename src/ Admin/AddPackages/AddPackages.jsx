@@ -28,7 +28,7 @@ export function AddPackages() {
         name_receiver: "", surname_receiver: "", phone_receiver: "", address_receiver: ""
     });
     const [infoPackage, setInfoPackage] = useState({
-        weight_load: "", number_load: "", paid_load: false, paid_load_value: 0
+        weight_load: "", number_load: "", paid_load: false, paid_load_value: 0, images: []
     })
     const [notEverytimeRed, setNotEverytimeRed] = useState(false)
     const steps = [{
@@ -80,7 +80,14 @@ export function AddPackages() {
     }
     function addPackage() {
         let isFormValid = ValidationChangeStep(isValidInput, infoPackage, setCurrentStepIndex, setValidInput, "+", setNotEverytimeRed, 2)
-        console.log(isFormValid)
+        const formData = new FormData();
+        formData.append("package[weight_load]", infoGiver.name_giver + " " + infoGiver.surname_giver);
+        formData.append("package[number_load]", infoGiver.phone_giver);
+        formData.append("package[paid_load]", infoGiver.address_giver);
+        formData.append("package[paid_load_value]", infoPackage.paid_load);
+        formData.append("package[images]", infoPackage.images);
+
+
         if (isFormValid) {
             doPost("/clients", {
                 name: infoGiver.name_giver + " " + infoGiver.surname_giver,
@@ -90,6 +97,7 @@ export function AddPackages() {
                 paid_value: infoPackage.paid_load_value,
                 client_type_id: 1
             }).then((responseGiver) => {
+                formData.append("package[giver_id]", responseGiver.data.id);
                 doPost("/clients", {
                     name: infoReceiver.name_receiver + " " + infoReceiver.surname_receiver,
                     phone: infoReceiver.phone_receiver,
@@ -98,14 +106,8 @@ export function AddPackages() {
                     paid_value: infoPackage.paid_load_value,
                     client_type_id: 2
                 }).then((responseReceiver) => {
-                    doPost("/packages", {
-                        weight: infoPackage.weight_load,
-                        number_load: infoPackage.number_load,
-                        paid: infoPackage.paid_load,
-                        paid_value: infoPackage.paid_load_value,
-                        giver_id: responseGiver.data.id,
-                        receiver_id: responseReceiver.data.id
-                    }).then(responsePackage=> navigate("/"))
+                    formData.append("package[receiver_id]", responseReceiver.data.id);
+                    doPost("/packages", formData).then(responsePackage=> navigate("/"))
                 })
             })
         }
@@ -312,6 +314,11 @@ export function AddPackages() {
                             </div>
                             <FileInput id="file"
                                        multiple
+                                       accept={"image/*"}
+                                       onChange={e => setInfoPackage((prev) => ({
+                                           ...prev,
+                                           images: e.target.files
+                                       }))}
                                        helperText="Poze la colete"/>
                         </div>
                         <hr/>

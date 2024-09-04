@@ -1,4 +1,4 @@
-import {Button, Card} from "flowbite-react";
+import {Avatar, Button, Card} from "flowbite-react";
 import {FaRegEdit} from "react-icons/fa";
 import {MdDeleteForever} from "react-icons/md";
 import {useEffect, useState} from "react";
@@ -62,6 +62,7 @@ export function Admin() {
                                     <li className="py-3 sm:py-4"
                                         key={user.id}>
                                         <div className="flex items-center space-x-4">
+                                            <Avatar img={user.avatar_image} size="md" className={"pt-3 pb-4"} rounded bordered />
                                             <div className="min-w-0 flex-1">
                                                 <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
                                                 <p className="truncate text-sm text-gray-500 dark:text-gray-400">{user.phone}</p>

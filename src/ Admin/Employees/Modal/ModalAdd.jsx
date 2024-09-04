@@ -24,10 +24,6 @@ export function ModalAdd(props) {
         console.log(formData)
         doPost("/signup", formData)
             .then((response) => {
-                setName("")
-                setPhone("")
-                setPassword("")
-                setAvatar("")
                 props.onCloseModal()
                 toast.success("Inregistrare reușită!")
                 props.refresh()

@@ -27,7 +27,7 @@ export function AddClients() {
         address_passenger_drop_off: ""
     });
     const [infoPackagePassenger, setInfoPackagePassenger] = useState({
-        weight_load_p: "", number_load_p: "", paid: false, paid_value: 0
+        weight_load_p: "", number_load_p: "", paid: false, paid_value: 0, images: []
     })
     const [isValidInput, setValidInput] = useState({
         name_passenger: false,
@@ -54,11 +54,13 @@ export function AddClients() {
     }
 
     function next() {
-        ValidationChangeStep(isValidInput,infoPassenger,setCurrentStepIndex,setValidInput,"+",setNotEverytimeRed,1)
+        ValidationChangeStep(isValidInput, infoPassenger, setCurrentStepIndex, setValidInput, "+", setNotEverytimeRed, 1)
     }
-    function back(){
-        ValidationChangeStep(isValidInput,infoPassenger,setCurrentStepIndex,setValidInput,"-",setNotEverytimeRed,1)
+
+    function back() {
+        ValidationChangeStep(isValidInput, infoPassenger, setCurrentStepIndex, setValidInput, "-", setNotEverytimeRed, 1)
     }
+
     function switchSteps() {
         switch (currentStepIndex) {
             case 0:
@@ -76,7 +78,7 @@ export function AddClients() {
                                                ...prev,
                                                name_passenger: capitalize(e.target.value)
                                            }))}
-                                           color={isValidInput.name_passenger === false && notEverytimeRed === true? "failure" : "" }
+                                           color={isValidInput.name_passenger === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoPassenger.name_passenger}
                                            required/>
                             </div>
@@ -89,7 +91,7 @@ export function AddClients() {
                                                ...prev,
                                                surname_passenger: capitalize(e.target.value)
                                            }))}
-                                           color={isValidInput.surname_passenger === false && notEverytimeRed === true? "failure" : "" }
+                                           color={isValidInput.surname_passenger === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoPassenger.surname_passenger}
                                            required/>
                             </div>
@@ -103,7 +105,7 @@ export function AddClients() {
                                            ...prev,
                                            phone_passenger: e.target.value
                                        }))}
-                                       color={isValidInput.phone_passenger === false && notEverytimeRed === true? "failure" : "" }
+                                       color={isValidInput.phone_passenger === false && notEverytimeRed === true ? "failure" : ""}
                                        value={infoPassenger.phone_passenger}
                                        required/>
                         </div>
@@ -116,7 +118,7 @@ export function AddClients() {
                                            ...prev,
                                            address_passenger_pick_up: capitalize(e.target.value)
                                        }))}
-                                       color={isValidInput.address_passenger_pick_up === false && notEverytimeRed === true? "failure" : "" }
+                                       color={isValidInput.address_passenger_pick_up === false && notEverytimeRed === true ? "failure" : ""}
                                        value={infoPassenger.address_passenger_pick_up}
                                        required/>
                         </div>
@@ -129,7 +131,7 @@ export function AddClients() {
                                            ...prev,
                                            address_passenger_drop_off: capitalize(e.target.value)
                                        }))}
-                                       color={isValidInput.address_passenger_drop_off === false && notEverytimeRed === true? "failure" : "" }
+                                       color={isValidInput.address_passenger_drop_off === false && notEverytimeRed === true ? "failure" : ""}
                                        value={infoPassenger.address_passenger_drop_off}
                                        required/>
                         </div>
@@ -155,7 +157,7 @@ export function AddClients() {
                                                ...prev,
                                                weight_load_p: e.target.value
                                            }))}
-                                           color={isValidInput.weight_load_p === false && notEverytimeRed === true? "failure" : "" }
+                                           color={isValidInput.weight_load_p === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoPackagePassenger.weight_load_p}
                                            required/>
                             </div>
@@ -168,7 +170,7 @@ export function AddClients() {
                                                ...prev,
                                                number_load_p: e.target.value
                                            }))}
-                                           color={isValidInput.number_load_p === false && notEverytimeRed === true? "failure" : "" }
+                                           color={isValidInput.number_load_p === false && notEverytimeRed === true ? "failure" : ""}
                                            value={infoPackagePassenger.number_load_p} required/>
                             </div>
                         </div>
@@ -180,7 +182,7 @@ export function AddClients() {
                                 <ToggleSwitch className={"flex items-center self-center"}
                                               onChange={e => setInfoPackagePassenger((prev) => ({
                                                   ...prev,
-                                                  paid_load: e
+                                                  paid: e
                                               }))}
                                               checked={infoPackagePassenger.paid}
                                               label={infoPackagePassenger.paid ? "DA" : "MAI TÂRZIU"}/>
@@ -195,7 +197,7 @@ export function AddClients() {
                                                    ...prev,
                                                    paid_value: e.target.value
                                                }))}
-                                               color={isValidInput.number_load_p === false && notEverytimeRed === true? "failure" : "" }
+                                               color={isValidInput.number_load_p === false && notEverytimeRed === true ? "failure" : ""}
                                                value={infoPackagePassenger.paid_value}
                                                required/>
                                 </div>
@@ -207,6 +209,11 @@ export function AddClients() {
                             </div>
                             <FileInput id="file"
                                        multiple
+                                       accept={"image/*"}
+                                       onChange={e => setInfoPackagePassenger((prev) => ({
+                                           ...prev,
+                                           images: e.target.files
+                                       }))}
                                        helperText="Poze la bagajelele pasagerilor"/>
                         </div>
                         <hr/>
@@ -227,9 +234,17 @@ export function AddClients() {
     }
 
     function addPassanger() {
-        let isFormValid = ValidationChangeStep(isValidInput,infoPackagePassenger,setCurrentStepIndex,setValidInput,"+",setNotEverytimeRed,1)
-        console.log(isFormValid)
-        if(isFormValid){
+        let isFormValid = ValidationChangeStep(isValidInput, infoPackagePassenger, setCurrentStepIndex, setValidInput, "+", setNotEverytimeRed, 1)
+        const formData = new FormData();
+        formData.append("package[weight]", infoPackagePassenger.weight_load_p);
+        formData.append("package[number_load]", infoPackagePassenger.number_load_p);
+        formData.append("package[paid]", infoPackagePassenger.paid);
+        formData.append("package[paid_value]", infoPackagePassenger.paid_value);
+        for (let i = 0; i < infoPackagePassenger.images.length; i++) {
+            formData.append("package[images][]", infoPackagePassenger.images[i]);
+        }
+
+        if (isFormValid) {
             doPost("/clients", {
                 name: infoPassenger.name_passenger + " " + infoPassenger.surname_passenger,
                 phone: infoPassenger.phone_passenger,
@@ -239,13 +254,8 @@ export function AddClients() {
                 paid_value: infoPackagePassenger.paid_value,
                 client_type_id: 3
             }).then((response) => {
-                doPost("/packages", {
-                    weight: infoPackagePassenger.weight_load_p,
-                    number_load: infoPackagePassenger.number_load_p,
-                    paid: infoPackagePassenger.paid,
-                    paid_value: infoPackagePassenger.paid_value,
-                    passenger_id: response.data.id
-                }).then(responsePackages=> navigate("/"))
+                formData.append("package[passenger_id]", response.data.id);
+                doPost("/packages", formData).then(responsePackages => navigate("/"))
             })
         }
     }

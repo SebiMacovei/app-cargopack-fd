@@ -20,7 +20,7 @@ export function ModalAdd(props) {
         start_tur: "", end_tur: "", start_retur: "", end_retur: ""
     });
     const [users, setUsers] = useState([]);
-    const [selectedUsers, setSelectedUsers] = useState([{id: 0},]);
+    const [selectedUsers, setSelectedUsers] = useState([{id: 0}]);
     const [emptyInput, setEmptyInput] = useState(false)
 
     const steps = [{
@@ -149,21 +149,28 @@ export function ModalAdd(props) {
             validateData("-")
     }
 
+    function convertDateRequest(date){
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11, so we add 1
+        const day = String(date.getDate()).padStart(2, '0');
+        return  `${year}-${month}-${day}`;
+    }
     function addTrip() {
         if(validateData("+") === true){
             const allData = {
                 tur_data: {
-                    start_tur_date: selectedData.start_tur,
-                    end_tur_date: selectedData.end_tur
+                    start_tur_date: convertDateRequest(selectedData.start_tur),
+                    end_tur_date: convertDateRequest(selectedData.end_tur)
                 },
                 retur_data: {
-                    start_retur_date: selectedData.start_retur,
-                    end_retur_date: selectedData.end_retur
+                    start_retur_date: convertDateRequest(selectedData.start_retur),
+                    end_retur_date: convertDateRequest(selectedData.end_retur)
                 },
                 selectedCars_data: selectedCars.map(selectedCar => {
                     return {car_id: selectedCar.id, users: selectedCar.users}
                 })
             }
+            console.log(allData)
             doPost("/trips", allData).then(response => navigate("/"))
         }
     }

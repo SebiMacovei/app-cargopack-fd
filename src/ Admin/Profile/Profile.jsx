@@ -57,8 +57,7 @@ export function Profile(props) {
                                     </Sidebar.ItemGroup>
                                     <Sidebar.ItemGroup>
                                         <Sidebar.Item className={"flex m-2"}
-                                                      onClick={() => logOut()} outline
-                                                      gradientDuoTone="greenToBlue"
+                                                      onClick={() => logOut()}
                                                       icon={TbLogout2}>Deconectare
                                         </Sidebar.Item>
                                     </Sidebar.ItemGroup>

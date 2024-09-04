@@ -1,4 +1,4 @@
-import {Button, Table} from "flowbite-react";
+import {Avatar, Button, Table} from "flowbite-react";
 import {Layout} from "../../Layout.jsx";
 import {useEffect, useState} from "react";
 import {doGet} from "../../http.js";
@@ -9,7 +9,7 @@ import {ModalDelete} from "./Modal/ModalDelete.jsx";
 import {IoPersonAddSharp} from "react-icons/io5";
 import {ModalAdd} from "./Modal/ModalAdd.jsx";
 
-export function EmployeesTableList() {
+export function EmployeesTableList(props) {
     const [users, setUsers] = useState([])
     const [openModal, setOpenModal]=useState("")
 
@@ -61,8 +61,9 @@ export function EmployeesTableList() {
                             return(
                                     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800"
                                                                             key={user.id}>
-                                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                        {user.name}
+                                    <Table.Cell className="flex flex-col flex-wrap  gap-5 items-center swhitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                        <div className={"flex flex-grow shrink-0 pt-3 pb-4"}><Avatar img={user.avatar_image} size="md" rounded bordered /></div>
+                                        <div className={"flex shrink-0 text-center "}> {user.name} </div>
                                     </Table.Cell>
                                     <Table.Cell>Activ</Table.Cell>
                                     <Table.Cell>Jesi</Table.Cell>

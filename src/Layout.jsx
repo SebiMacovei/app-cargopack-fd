@@ -17,16 +17,7 @@ export function Layout(props) {
                    </Link>
                    <DarkThemeToggle/>
                </div>
-                {localStorage.getItem("token") ?
-                    <>
-                        <Navbar.Toggle className={"text-white"}/>
-                        <Navbar.Collapse>
-                            <div className={"md:flex  md:justify-around  md:items-center md:gap-6"}>
-                                    <Navbar.Link href="/statscargo">Status Curse</Navbar.Link>
-                            </div>
-                        </Navbar.Collapse>
-                  </>
-                    :
+                {!localStorage.getItem("token") &&
                     <Link to={"/login"}>
                         <Button gradientDuoTone="greenToBlue">
                             Conectează-te
