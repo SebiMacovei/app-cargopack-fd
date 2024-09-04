@@ -1,7 +1,7 @@
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 
-const url = "http://127.0.0.1:3000"
+const url = import.meta.env.VITE_API_URL;
 if (localStorage.getItem("token")) {
     const decoded = jwtDecode(localStorage.getItem("token"));
     if (decoded.exp <= Math.floor(new Date().getTime() / 1000)) {
